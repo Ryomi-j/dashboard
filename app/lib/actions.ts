@@ -1,15 +1,15 @@
-'use server';
+"use server";
 
-import { sql } from '@vercel/postgres';
-import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
-import { z } from 'zod';
+import { sql } from "@vercel/postgres";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { z } from "zod";
 
 const InvoiceSchema = z.object({
   id: z.string(),
   customerId: z.string(),
   amount: z.coerce.number(),
-  status: z.enum(['pending', 'paid']),
+  status: z.enum(["pending", "paid"]),
   date: z.string(),
 });
 
@@ -17,18 +17,38 @@ const CreateInvoice = InvoiceSchema.omit({ id: true, date: true });
 
 export async function createInvoice(formData: FormData) {
   const { customerId, amount, status } = CreateInvoice.parse({
-    customerId: formData.get('customerId'),
-    amount: formData.get('amount'),
-    status: formData.get('status'),
+    customerId: formData.get("customerId"),
+    amount: formData.get("amount"),
+    status: formData.get("status"),
   });
 
   const amountInCents = amount * 100;
-  const date = new Date().toISOString().split('T')[0];
+  const date = new Date().toISOString().split("T")[0];
 
   await sql`
     INSERT INTO invoices (customer_id, amount, status, date)
     VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
   `;
-  revalidatePath('/dashboard/invoices'); // 해당 경로의 데이터 새로 받아오기
-  redirect('/dashboard/invoices'); // 해당 경로로 이동
+  revalidatePath("/dashboard/invoices"); // clear the client cache and make a new server request.
+  redirect("/dashboard/invoices"); // 해당 경로로 이동
 }
+
+const UpdateInvoice = InvoiceSchema.omit({ id: true, date: true });
+
+export const updateInvoice = async (id: string, formData: FormData) => {
+  const { customerId, amount, status } = UpdateInvoice.parse({
+    customerId: formData.get("customerId"),
+    amount: formData.get("amount"),
+    status: formData.get("status"),
+  });
+
+  const amountInCents = amount * 100;
+
+  await sql`
+    UPDATE invoices
+    SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
+    WHERE id = ${id}
+  `;
+  revalidatePath("/dashboard/invoices");
+  redirect("/dashboard/invoices");
+};
