@@ -32,7 +32,7 @@
 3. [폰트 최적화](https://hushed-guavaberry-fff.notion.site/Next-js-CLS-162dc9f9c7ff8030a2e5d60ac6c26a6d)
 4. [Next.js 15와 React 19 이해](https://hushed-guavaberry-fff.notion.site/Next-js-15-React-19-161dc9f9c7ff806da104f4be95ca86be)
 
-## 학습 기록
+## [학습 기록](https://www.notion.so/Next-js-15-133dc9f9c7ff803b9ae6e411bdbdb788)
 
 ### UI & 레이아웃
 
