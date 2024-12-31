@@ -65,7 +65,11 @@ export async function createInvoice(prevState: State, formData: FormData) {
 
 const UpdateInvoice = FormSchema.omit({ id: true, date: true });
 
-export const updateInvoice = async (id: string, prevState: State, formData: FormData) => {
+export const updateInvoice = async (
+  id: string,
+  prevState: State,
+  formData: FormData
+) => {
   const validatedFields = UpdateInvoice.safeParse(
     Object.fromEntries(formData.entries())
   );
@@ -95,7 +99,7 @@ export const updateInvoice = async (id: string, prevState: State, formData: Form
   redirect("/dashboard/invoices");
 };
 
-export const deleteInvoice = async (id: string) => {
+export const deleteInvoice = async (id: string, formData: FormData) => {
   try {
     await sql`DELETE FROM invoices WHERE id = ${id}`;
     revalidatePath("/dashboard/invoices");
